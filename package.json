@@ -29,6 +29,6 @@
     "build": "babel src --extensions .ts --copy-files -d lib"
   },
   "dependencies": {
-    "@repcomm/scenario2d": "^1.1.1"
+    "@repcomm/vec2d": "^1.1.0"
   }
 }
