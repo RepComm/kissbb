@@ -24,10 +24,10 @@ export class AABB {
     //b1 is moving
 
     // let invEntry: Vec2;
-    let xInvEntry: number;
-    let yInvEntry: number;
-    let xInvExit: number;
-    let yInvExit: number;
+    let xInvEntry = 0;
+    let yInvEntry = 0;
+    let xInvExit = 0;
+    let yInvExit = 0;
 
     // find the distance between the objects on the near and far sides for both x and y
 
@@ -42,12 +42,74 @@ export class AABB {
     if (b1.velocity.y > 0.0) {
       yInvEntry = b2.position.y - (b1.position.y + b1.size.y);
       yInvExit = (b2.position.y + b2.size.y) - b1.position.y;
-    }
-    else {
+    } else {
       yInvEntry = (b2.position.y + b2.size.y) - b1.position.y;
       yInvExit = b2.position.y - (b1.position.y + b1.size.y);
     }
+
+    //let entryVec = new Vec2();
+    //let exitVec = new Vec2();
+    let xEntry = 0;
+    let yEntry = 0; 
+    let xExit = 0;
+    let yExit = 0; 
+    
+    if (b1.velocity.x == 0.0) { 
+      xEntry = -Math.Infinity; 
+      xExit = Math.Infinity; 
+    } else { 
+      xEntry = xInvEntry / b1.velocity.x; 
+      xExit = xInvExit / b1.velocity.x;
+    } 
+    
+    if (b1.velocity.y == 0.0) { 
+      yEntry = -Math.Infinity;
+      yExit = Math.Infinity;
+    } else { 
+      yEntry = yInvEntry / b1.velocity.y; 
+      yExit = yInvExit / b1.velocity.y; 
+    }
+
+    //TODO
+    // find the earliest/latest times of collisionfloat 
+    let entryTime = Math.max(xEntry, yEntry); 
+    let exitTime = Math.min(xExit, yExit);
+
+    // if there was no collision
+    if (
+   	  entryTime > exitTime ||
+   	  xEntry < 0.0 && yEntry < 0.0 ||
+   	  xEntry > 1.0 ||
+   	  yEntry > 1.0
+    ) { 
+      outNormal.x = 0.0; 
+      outNormal.y = 0.0; 
+      return 1.0;
+    } else { 
+     // calculate normal of collided surface
+     if (xEntry > yEntry) { 
+       if (xInvEntry < 0.0) { 
+         outNormal.x = 1.0; 
+         outNormal.y = 0.0; 
+       } else { 
+         outNormal.x = -1.0; 
+         outNormal.y = 0.0;
+       }
+     } else { 
+       if (yInvEntry < 0.0) { 
+         outNormal.x = 0.0; 
+         outNormal.y = 1.0; 
+       } else { 
+         outNormal.x = 0.0; 
+         outNormal.y = -1.0; 
+       } 
+     } // return the time of collisionreturn entryTime; 
+   }
+
+   
   }
+
+  //TODO - doesn't work for non-halfExtents
   static extend(aabb: AABB, left: number, right: number, up: number, down: number) {
     if (left !== 0) {
       aabb.size.x += left / 2;
